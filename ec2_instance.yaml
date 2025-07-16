@@ -1,0 +1,23 @@
+---
+- hosts : localhost
+  connection : local
+
+  tasks:
+  - name: create EC2 instance
+    amazon.aws.ec2_instance:
+      name: "{{ item.name }}"
+      key_name: "python-flask-us2-keypair"
+      instance_type: t2.micro
+      security_group: default
+      region: us-east-2
+      aws_access_key: "{{ec2_access_key}}"  # From vault as defined
+      aws_secret_key: "{{ec2_secret_key}}"  # From vault as defined      
+      network:
+        assign_public_ip: true
+      image_id: "{{ item.image}}" # Jinja Templating.
+      tags:
+        environment: "{{ item.name }}"
+    loop:
+      - {image : "ami-0d1b5a8c13042c939" , name: "manage-node-10" }
+      - {image : "ami-0d1b5a8c13042c939" , name: "manage-node-20" }
+      - {image : "ami-0eb9d6fc9fab44d24" , name: "manage-node-30" }
